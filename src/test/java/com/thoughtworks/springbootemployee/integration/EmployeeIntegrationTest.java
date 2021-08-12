@@ -13,6 +13,8 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import javax.print.attribute.standard.Media;
 
+import java.util.List;
+
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -107,5 +109,25 @@ public class EmployeeIntegrationTest {
                 .andExpect(jsonPath("$.age").value(20))
                 .andExpect(jsonPath("$.gender").value("male"))
                 .andExpect(jsonPath("$.salary").value(9999));
+    }
+
+    @Test
+    public void should_return_employees_by_gender_when_find_employee_by_gender_api() throws Exception{
+        //given
+        final Employee employee1 = new Employee(1, "Tom", 20, "male", 9999);
+        final Employee employee2 = new Employee(2, "Jerry", 21, "male", 9999);
+        final Employee employee3 = new Employee(2, "Alice", 21, "female", 9999);
+        employeesRepository.save(employee1);
+        employeesRepository.save(employee2);
+        employeesRepository.save(employee3);
+        //when
+
+        //then
+        String gender = "male";
+        List<Employee> searchEmployee = employeesRepository.findAllByGender(gender);
+        mockMvc.perform(MockMvcRequestBuilders.get("/employees").param("gender", gender))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].gender").value("male"))
+                .andExpect(jsonPath("$[1].gender").value("male"));
     }
 }
