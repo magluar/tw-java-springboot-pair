@@ -2,6 +2,7 @@ package com.thoughtworks.springbootemployee.integration;
 
 import com.thoughtworks.springbootemployee.model.Employee;
 import com.thoughtworks.springbootemployee.repository.EmployeesRepository;
+import com.thoughtworks.springbootemployee.service.EmployeesService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -9,6 +10,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+
+import javax.print.attribute.standard.Media;
 
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -20,6 +23,8 @@ public class EmployeeIntegrationTest {
     private MockMvc mockMvc;
     @Autowired
     private EmployeesRepository employeesRepository;
+    @Autowired
+    private EmployeesService employeesService;
 
     @Test
     public void should_return_all_employees_when_call_get_employees_api() throws Exception{
@@ -82,5 +87,25 @@ public class EmployeeIntegrationTest {
                 .andExpect(jsonPath("$.age").value("23"))
                 .andExpect(jsonPath("$.gender").value("female"))
                 .andExpect(jsonPath("$.salary").value("9999"));
+    }
+
+    @Test
+    public void should_return_employee_id_when_call_find_employee_by_id_api() throws Exception{
+        //given
+        final Employee employee = new Employee(1, "Tom", 20, "male", 9999);
+        employeesRepository.save(employee);
+        //when
+
+        //then
+        int id = 1;
+        Employee searchEmployee = employeesService.findEmployeeById(id);
+        mockMvc.perform(MockMvcRequestBuilders.get("/employees/{id}", id)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(String.valueOf(searchEmployee)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.name").value("Tom"))
+                .andExpect(jsonPath("$.age").value(20))
+                .andExpect(jsonPath("$.gender").value("male"))
+                .andExpect(jsonPath("$.salary").value(9999));
     }
 }
