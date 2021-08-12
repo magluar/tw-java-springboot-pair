@@ -35,8 +35,8 @@ public class EmployeesService {
         return employeesRepository.findAllByGender(gender);
     }
 
-    public void addEmployee(Employee employee) {
-        employeesRepository.save(employee);
+    public Employee addEmployee(Employee employee) {
+        return employeesRepository.save(employee);
     }
 
     public Employee updateEmployee(Integer employeeId, Employee employeeUpdated) {
