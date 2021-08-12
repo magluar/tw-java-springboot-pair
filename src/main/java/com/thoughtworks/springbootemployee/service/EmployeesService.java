@@ -8,6 +8,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
@@ -39,12 +40,9 @@ public class EmployeesService {
     }
 
     public Employee updateEmployee(Integer employeeId, Employee employeeUpdated) {
-        List<Employee> employees = retiringEmployeesRepository.getEmployees();
-
-        return employees.stream()
-                .filter(employee -> employee.getId().equals(employeeId))
-                .findFirst()
-                .map(employee -> updateEmployeeInformation(employee, employeeUpdated)).orElse(null);
+        Employee updateEmployee = employeesRepository.findById(employeeId).orElse(null);
+        return employeesRepository.save(Objects.requireNonNull(updateEmployeeInformation(updateEmployee,
+                employeeUpdated)));
     }
 
     private Employee updateEmployeeInformation(Employee employee, Employee employeeUpdated) {
@@ -60,15 +58,11 @@ public class EmployeesService {
         if (employeeUpdated.getSalary() != null) {
             employee.setSalary(employeeUpdated.getSalary());
         }
-
         return employee;
     }
 
-    public List<Employee> deleteEmployeeRecord(Integer employeeId) {
-        List<Employee> employees = retiringEmployeesRepository.getEmployees();
-
-        employees.removeIf(employee -> employee.getId().equals(employeeId));
-        return employees;
+    public void deleteEmployeeRecord(Integer employeeId) {
+        employeesRepository.deleteById(employeeId);
     }
 
 }
