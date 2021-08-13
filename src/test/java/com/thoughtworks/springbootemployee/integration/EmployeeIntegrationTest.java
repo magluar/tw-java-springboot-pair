@@ -3,6 +3,7 @@ package com.thoughtworks.springbootemployee.integration;
 import com.thoughtworks.springbootemployee.model.Employee;
 import com.thoughtworks.springbootemployee.repository.EmployeesRepository;
 import com.thoughtworks.springbootemployee.service.EmployeesService;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -11,9 +12,6 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
-import javax.print.attribute.standard.Media;
-
-import java.util.List;
 
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -27,6 +25,11 @@ public class EmployeeIntegrationTest {
     private EmployeesRepository employeesRepository;
     @Autowired
     private EmployeesService employeesService;
+
+    @AfterEach
+    void tearDown(){
+        employeesRepository.deleteAll();
+    }
 
     @Test
     public void should_return_all_employees_when_call_get_employees_api() throws Exception{
@@ -115,8 +118,8 @@ public class EmployeeIntegrationTest {
     public void should_return_employees_by_gender_when_find_employee_by_gender_api() throws Exception{
         //given
         final Employee employee1 = new Employee(1, "Tom", 20, "male", 9999);
-        final Employee employee2 = new Employee(2, "Jerry", 21, "male", 9999);
-        final Employee employee3 = new Employee(3, "Alice", 21, "female", 9999);
+        final Employee employee2 = new Employee(2, "Alice", 21, "female", 9999);
+        final Employee employee3 = new Employee(3, "Jerry", 21, "male", 9999);
         employeesRepository.save(employee1);
         employeesRepository.save(employee2);
         employeesRepository.save(employee3);
